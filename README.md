@@ -1,27 +1,64 @@
 # AngularDynamicHeight
+In this tutorial, i have explained how you an dynamically set height of a div of component depending on other div of component.
+Here, i have two sections : 1. Top 2. Bottom
+After loading, Bottom section is hidden with only Arrow icon. This arrow icon is used to show and hide the content of bottom section.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.0.
+![Dynamic Height](download.png)
 
-## Development server
+## resize-comonent-facotry
+this factory is being used to define export function "resizeComponent". This "resizeComponent" function can be exported using export keyword. 
+The component where you want to use this function, you have to import it.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+```
+export function resizeComponent(topSectionclassName, bottomSectionclassName) {
+    const height = window.innerHeight;
+    let bottomSectionHeight = 0;
+    if (topSectionclassName && bottomSectionclassName) {
+        bottomSectionHeight = document.querySelector<HTMLElement>('.' + bottomSectionclassName).offsetHeight;
+        document.querySelector<HTMLElement>('.' + topSectionclassName).style.height = (height - bottomSectionHeight) + 'px';
+    }
+}
+```
 
-## Code scaffolding
+## app.component
+APPComponent is the parent component of both top and bottom components. So, i have included "resizeComponent" function in app component. 
+I am passing the top and bottom panel class names using "resizeComponent" function parameters to calculate the top and bottom component
+heights when the content of bottom component is showed or hidden.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```
+ngOnInit(): void {
+    resizeComponent('top-panel', 'bottom-panel');
+  }
 
-## Build
+  eventNotifyPanelOpen(event) {
+    resizeComponent('top-panel', 'bottom-panel');
+  }
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+If you resize your window then again "resizeComponent" function should be called.
+```
+@HostListener('window:resize', ['$event'])
+  onResize(event) {
+    resizeComponent('top-panel', 'bottom-panel');
+  }
+```
 
-## Running unit tests
+## bottom-panel.component
+After component initialization, bottom panel should be hidden. I have used ElementRef with querySelector to get the DOM element
+and add / remove class. 
+For better coding, you should keep checking for elementRef and other elements getting undefined or not. Sometimes UI may take time
+to rendering then you will get console error. This error will break your functionlities.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```
+this.btnArrow = this.elementRef.nativeElement.querySelector('i.fas');
+    this.bottomPanel = this.elementRef.nativeElement.querySelector('.bottom-panel');
+    this.boxes = this.elementRef.nativeElement.querySelectorAll('.box');
+    this.latestPostElem = this.elementRef.nativeElement.querySelector('.latest-posts');
+    if (!this.isBottomPanelOpen && this.elementRef && this.btnArrow && this.bottomPanel && this.boxes.length > 0) {
+      this.btnArrow.classList.add('fa-caret-up');
+      this.setBoxHeight(0, this.boxes);
+      this.latestPostElem.style.display = 'none';
+    }
+```
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).

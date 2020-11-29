@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { resizeComponent } from './resize-comonent-facotry';
 
 @Component({
@@ -8,6 +8,11 @@ import { resizeComponent } from './resize-comonent-facotry';
 })
 export class AppComponent implements OnInit {
   title = 'Angular-Dynamic-Height';
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    resizeComponent('top-panel', 'bottom-panel');
+  }
 
   ngOnInit(): void {
     resizeComponent('top-panel', 'bottom-panel');

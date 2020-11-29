@@ -48,7 +48,6 @@ export class BottomPanelComponent implements OnInit {
   }
 
   setBoxHeight(bottomPanelHeight, boxes) {
-    console.log('bottomPanelHeight => ', bottomPanelHeight);
     if (this.elementRef) {
       boxes.forEach(box => {
         if (bottomPanelHeight === 0) {
